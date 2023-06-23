@@ -26,6 +26,7 @@ gd.configure_column("Credit Card",editable=False)
 gd.configure_column("SSN",editable=False)
 
 gridOptions = gd.build()
+
 #{'STREAMLIT': <AgGridTheme.STREAMLIT: 'streamlit'>, 'ALPINE': <AgGridTheme.ALPINE: 'alpine'>, 'BALHAM': <AgGridTheme.BALHAM: 'balham'>, 'MATERIAL': <AgGridTheme.MATERIAL: 'material'>}
 grid_table = AgGrid(dataframe,gridOptions=gridOptions,theme='material')    
 updated_dataframe = grid_table['selected_rows']

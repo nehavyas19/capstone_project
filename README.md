@@ -18,3 +18,13 @@ Capstone project work started.
     a) #pip install plotly
 
 #6 Remove all unused files and merge the 'application-fron-ent' branch in 'main' branch
+
+#7 Commit with all Loan App API requirement 5 finished.
+
+
+
+Technical Difficulties and Research
+
+1. MySQL connection was not passed on from an import file/connection function when required. To get around this problem the initial fix made was to get the mysql connection and close it multiple times.
+2. Related to MySQL - Last requirement was done with only one connection request
+3. Researched for solutions to display/update results in a more user friendly way - thats how streamlit was chosen

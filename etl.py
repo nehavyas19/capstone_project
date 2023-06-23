@@ -1,19 +1,23 @@
+# Import all the necessary libraries
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, VarcharType, TimestampType, DoubleType
 from pyspark.sql.functions import lower,upper,initcap,concat,concat_ws,lit,substring,col,format_string,lpad #Import string transformation functions
-import os
 
+# Get the spark session started, if already exists returns that
 def get_spark_session(app_name):
     return SparkSession.builder.appName(app_name).getOrCreate()
 
-
+# Read the json file to the spark dataframe
 def load_file_to_dataframe(spark,file,schema):
 
     dataframe = spark.read.schema(schema).json(file)
 
     return dataframe
 
+# Transform customer details
+# Transforms usual string transformations, drops 2 columns after concatenation, changes customer phone to add 123 - just to make it 10 digit
+# Adding anything to customer phone is not guaranteed to give correct # and is an overkill, state codes can be different, customer changes state and keeps the #s
 def transform_customer(dataframe):
     transformed_dataframe = dataframe.withColumn('FIRST_NAME',initcap(dataframe['FIRST_NAME'])) \
                                      .withColumn('MIDDLE_NAME',lower(dataframe['MIDDLE_NAME'])) \
@@ -38,7 +42,9 @@ def transform_customer(dataframe):
     transformed_dataframe.collect()
     return transformed_dataframe
 
-
+# Transforms credit details
+# Concats 4 digit year, 2 digit month, 2 digit day to new field TIMEID and drops all the unnecessary columns
+# Removes a 'Test' transaction type
 def transform_credit(dataframe):
     transformed_dataframe = dataframe.withColumn('TIMEID',concat(format_string("%04d",col('YEAR').cast('int')),format_string("%02d",col('MONTH').cast('int')),format_string("%02d",col('DAY').cast('int')))) \
                                         .drop('DAY') \
@@ -51,7 +57,8 @@ def transform_credit(dataframe):
     transformed_dataframe.collect()
     return transformed_dataframe
 
-
+# Transforms branch details
+# Fills zipcode with 999999 where zipcode is null
 def transform_branch(dataframe):
     #Note - col function works on chained value vs dataframe['column_name'] does not. Phone was giving errors when changed after adding padded values
     transformed_dataframe = dataframe.fillna(value=999999,subset=['BRANCH_ZIP']) \
@@ -69,7 +76,7 @@ def transform_branch(dataframe):
     transformed_dataframe.collect()
     return transformed_dataframe
 
-
+# Loads the clean dataframe to database
 def load_dataframe_to_db(clean_dataframe, table_name, schema):
 
     from config import db
@@ -81,7 +88,8 @@ def load_dataframe_to_db(clean_dataframe, table_name, schema):
     schema_transform_customer = "FIRST_NAME varchar(50), MIDDLE_NAME varchar(50), LAST_NAME varchar(50), CREDIT_CARD_NO varchar(16), FULL_STREET_ADDRESS varchar(200), CUST_CITY varchar(50), CUST_STATE varchar(2), CUST_COUNTRY varchar(25), CUST_PHONE varchar(13), CUST_EMAIL varchar(50)"
 
 
-    #Note: Default write mode is 'overwrite' which deletes the table and recreates it
+    #Note: Write mode is 'overwrite' which drops the table and recreates it
+    # Schema is created to map the dataframes to mysql types.
     clean_dataframe.select("*").write.format("jdbc") \
     .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
     .option("dbtable", "creditcard_capstone."+table_name) \
@@ -94,19 +102,15 @@ def load_dataframe_to_db(clean_dataframe, table_name, schema):
     .save()
 
 
+# Get the spark session
 spark = get_spark_session('ETL_Loan_Application')
 
+# File lists to extract, transform and load
 file_list = {
                 'transform_branch':'data_sets/cdw_sapp_branch.json',
                 'transform_credit':'data_sets/cdw_sapp_credit.json',
                 'transform_customer':'data_sets/cdw_sapp_customer.json'
             }
-
-# file_list = {
-#                 'transform_branch':os.path.join('data_sets','cdw_sapp_branch.json'),
-#                 'transform_credit':os.path.join('data_sets','cdw_sapp_credit.json'),
-#                 'transform_customer':os.path.join('data_sets','cdw_sapp_customer.json')
-#             }
 
 schema_transform_branch = StructType([ \
                                     StructField("BRANCH_CODE",IntegerType(),True), \
@@ -149,6 +153,7 @@ schema_transform_customer = StructType([ \
                             ])
 
 
+#ETL Starts
 for file_transform, file_path in file_list.items():
     
     schema = 'schema_'+str(file_transform) #Generate dynamic variable to get runtime schema using locals()
