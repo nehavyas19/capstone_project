@@ -3,6 +3,7 @@ import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, VarcharType, TimestampType, DoubleType
 from pyspark.sql.functions import lower,upper,initcap,concat,concat_ws,lit,substring,col,format_string,lpad #Import string transformation functions
+import logging
 
 # Get the spark session started, if already exists returns that
 def get_spark_session(app_name):
@@ -153,12 +154,24 @@ schema_transform_customer = StructType([ \
                             ])
 
 
+# Log ETL in file
+logging.basicConfig(filename='etl.log',format='%(asctime)s %(message)s',level=logging.INFO)
+logger = logging.getLogger()
+
 #ETL Starts
 for file_transform, file_path in file_list.items():
     
     schema = 'schema_'+str(file_transform) #Generate dynamic variable to get runtime schema using locals()
+    
+    # Extract
+    logger.info("Extracting "+file_path) 
     dataframe = load_file_to_dataframe(spark, file_path, locals()[schema])
+
+    # Transform
+    logger.info("Transforming "+file_transform) 
     clean_dataframe = locals()[file_transform](dataframe) #locals used to call function in local scope or it parses it as string
 
+    # Load
     table_name = file_path.partition('/')[2].partition('.')[0]
+    logger.info("Loading "+table_name) 
     load_dataframe_to_db(clean_dataframe, table_name, schema)

@@ -136,3 +136,7 @@ st.plotly_chart(fig)
 
 # fig = px.imshow(pd.DataFrame(list_df).transpose(), text_auto=True)
 # st.plotly_chart(fig, use_container_width=True)
+
+
+# Tableau created charts as dashboard
+st.image('Requirement_5_Capstone_Project.png', caption='Tableau Charts for above requirements', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")

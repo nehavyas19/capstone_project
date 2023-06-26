@@ -63,6 +63,7 @@ def get_branch_healthcare_max_total():
                 "SELECT round(sum(c_credit.transaction_value),2) as total_transaction_value, c_credit.branch_code, c_branch.branch_name "
                 "FROM cdw_sapp_credit c_credit, cdw_sapp_branch c_branch "
                 "WHERE TRANSACTION_TYPE = 'Healthcare' "
+                "AND c_credit.branch_code = c_branch.branch_code "
                 "GROUP BY branch_code, branch_name "
                 "ORDER BY total_transaction_value DESC "
                 "LIMIT 5"
