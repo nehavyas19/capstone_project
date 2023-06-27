@@ -23,8 +23,8 @@ with st.container():
     result = cust.get_customer_monthly_bill(credit_card, month, year)
     
     #Change MYSQL results to pandas dataframe - Easy to add cols or hide index to show in tables.
-    dataframe = pd.DataFrame(result,columns=['First Name', 'Last Name', 'Credit Card', 'Transaction Id', 'Transaction Type', 'Transaction Value'])
-    dataframe.loc['Total','Transaction Value'] = dataframe['Transaction Value'].sum()
+    dataframe = pd.DataFrame(result,columns=['First Name', 'Last Name', 'Credit Card', 'Transaction Id', 'Transaction Type', 'Transaction Value (USD)'])
+    dataframe.loc['Total','Transaction Value (USD)'] = dataframe['Transaction Value (USD)'].sum() # Add transaction total row in the end only for last column. Row index is 'Total'
 
 # Display mysql results in streamlit grid table format
 gd = GridOptionsBuilder.from_dataframe(dataframe)

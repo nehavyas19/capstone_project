@@ -6,8 +6,8 @@ from pyspark.sql.functions import lower,upper,initcap,concat,concat_ws,lit,subst
 import logging
 
 # Get the spark session started, if already exists returns that
-def get_spark_session(app_name):
-    return SparkSession.builder.appName(app_name).getOrCreate()
+def get_spark_session():
+    return SparkSession.builder.appName('ETL_Loan_Application').getOrCreate()
 
 # Read the json file to the spark dataframe
 def load_file_to_dataframe(spark,file,schema):
@@ -19,6 +19,8 @@ def load_file_to_dataframe(spark,file,schema):
 # Transform customer details
 # Transforms usual string transformations, drops 2 columns after concatenation, changes customer phone to add 123 - just to make it 10 digit
 # Adding anything to customer phone is not guaranteed to give correct # and is an overkill, state codes can be different, customer changes state and keeps the #s
+
+# withColumn to change value e.g. First Name, to add column e.g. Full street address, to cast zip as an integer
 def transform_customer(dataframe):
     transformed_dataframe = dataframe.withColumn('FIRST_NAME',initcap(dataframe['FIRST_NAME'])) \
                                      .withColumn('MIDDLE_NAME',lower(dataframe['MIDDLE_NAME'])) \
@@ -104,7 +106,7 @@ def load_dataframe_to_db(clean_dataframe, table_name, schema):
 
 
 # Get the spark session
-spark = get_spark_session('ETL_Loan_Application')
+spark = get_spark_session()
 
 # File lists to extract, transform and load
 file_list = {
@@ -175,3 +177,5 @@ for file_transform, file_path in file_list.items():
     table_name = file_path.partition('/')[2].partition('.')[0]
     logger.info("Loading "+table_name) 
     load_dataframe_to_db(clean_dataframe, table_name, schema)
+
+SparkSession.stop(spark)

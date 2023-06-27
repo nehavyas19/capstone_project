@@ -140,3 +140,7 @@ st.plotly_chart(fig)
 
 # Tableau created charts as dashboard
 st.image('Requirement_5_Capstone_Project.png', caption='Tableau Charts for above requirements', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+st.image('1_Loan_Status_Self_Employed.png', caption='Loan Status for Self Employed', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+st.image('2_Loan_Status_by_Gender.png', caption='Loan Status by Gender', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+st.image('3_Top_3_Months_Highest_Transaction_Data.png', caption='Top 3 months with highest transactions', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+st.image('4_Top_10_Branches_with_Highest_Healthcare_Transactions.png', caption='Top 10 branches with highest healthcare transactions', width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")

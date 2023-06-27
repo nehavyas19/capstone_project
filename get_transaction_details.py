@@ -24,7 +24,7 @@ def get_mysql_connection(db_name):
     return mysql_connect
 
 
-
+# Transactions by customer zip code and transaction time
 def get_transaction_by_zip(zip, timeid):
 
     mysql_connect = get_mysql_connection('creditcard_capstone')
@@ -38,7 +38,7 @@ def get_transaction_by_zip(zip, timeid):
                 "WHERE c_credit.TIMEID LIKE %s "
                 "AND c_cust.CUST_ZIP = %s "
                 "AND c_credit.CUST_SSN = c_cust.SSN "
-                "ORDER BY c_credit.TRANSACTION_ID "
+                "ORDER BY c_credit.TIMEID DESC "
             )
 
     cursor.execute(query, (timeid, zip))
@@ -49,6 +49,7 @@ def get_transaction_by_zip(zip, timeid):
     return result
 
 
+# Get number of transactions and total transaction values by transaction type
 def get_transaction_by_type(transaction_type):
 
     mysql_connect = get_mysql_connection('creditcard_capstone')
@@ -69,6 +70,7 @@ def get_transaction_by_type(transaction_type):
     return result
 
 
+# Get number of transactions and total transaction values by branch state
 def get_transaction_by_branch(state):
 
     mysql_connect = get_mysql_connection('creditcard_capstone')

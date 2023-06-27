@@ -5,6 +5,7 @@ import pandas as pd
 import get_customer_details as cust
 
 st.set_page_config(layout="wide")
+st.header('Display/Edit Customer Details. Click one checkbox at a time to update selected customer details.')
 
 # Functional Requirements 2.2.1
 # 1) Used to check the existing account details of a customer.

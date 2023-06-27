@@ -7,12 +7,22 @@ st.set_page_config(
     page_icon= ':credit_card:',
 )
 st.title('Transaction Details')
+st.markdown("""
+<style>
+[data-baseweb="base-input"]{
+background:#3399ff;
+border: 2px;
+border-radius: 3px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 # Functional Requirements 2.1
 # 1) Used to display the transactions made by customers living in a given zip code for a given month and year. Order by day in descending order.
 with st.container():
     st.write('Functional Requirements 2.1.1')
-    st.write(':arrow_forward: Transactions by zipcode, month and year - Order by Transaction Id')
+    st.write(':arrow_forward: Transactions by customer zipcode, transaction month and year - Order by Day Desc')
     cols = st.columns(3)
     with cols[0]:
         zip_code = st.text_input('Zip Code')
@@ -53,7 +63,7 @@ with st.container():
         transaction_type = st.text_input('Type')
 
     result = trans.get_transaction_by_type(transaction_type)
-    dataframe = pd.DataFrame(result,columns=['Transaction Type','Number of transactions','Total value of transactions'])
+    dataframe = pd.DataFrame(result,columns=['Transaction Type','Number of transactions','Total value of transactions (USD)'])
     # Display mysql results as streamlit dataframe format
     st.dataframe(dataframe,hide_index=True)
 
@@ -70,6 +80,6 @@ with st.container():
         ('AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','PR','RI','SC','SD','TN','TX','UT','VT','VA','VI','WA','WV','WI','WY'))
 
     result = trans.get_transaction_by_branch(state)
-    dataframe = pd.DataFrame(result,columns=['Number of transactions','Total value of transactions'])
+    dataframe = pd.DataFrame(result,columns=['Number of transactions','Total value of transactions (USD)'])
     # Display mysql results as streamlit dataframe format
     st.dataframe(dataframe,hide_index=True)
